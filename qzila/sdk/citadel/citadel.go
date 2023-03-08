@@ -27,7 +27,6 @@ const (
 	UserLocked              = "locked"
 	UserInvited             = "invited"
 	UserInvitationConfirmed = "invitationConfirmed"
-	UserDeleted             = "deleted"
 )
 
 const (
