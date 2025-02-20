@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	updateUserIdAction          = "/users.updateUserId"
 	createUserAction            = "/users.create"
 	getUserAction               = "/users.get"
 	deleteUserAction            = "/users.delete"
@@ -525,7 +526,39 @@ func (c *client) AdminImpersonateStop(request *AdminImpersonateStopRequest) (*Ad
 	return response, nil
 }
 
+type UpdateUserIdRequest struct {
+	UserId string `json:"userId"`
+	NewId  string `json:"newId"`
+}
+
+type UpdateUserIdResponse struct {
+	Id string `json:"id"`
+}
+
+func (c *client) UpdateUserId(request *UpdateUserIdRequest) (*UpdateUserIdResponse, error) {
+	requestBody, err := json.Marshal(request)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %v", err)
+	}
+
+	responseBody, err := c.request(updateUserIdAction, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return nil, fmt.Errorf("%v", err)
+	}
+
+	defer responseBody.Close()
+
+	response := &UpdateUserIdResponse{}
+	err = json.NewDecoder(responseBody).Decode(response)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal response: %v", err)
+	}
+
+	return response, nil
+}
+
 type Client interface {
+	UpdateUserId(request *UpdateUserIdRequest) (*UpdateUserIdResponse, error)
 	CreateUser(request *CreateUserRequest) (*CreateUserResponse, error)
 	GetUser(request *GetUserRequest) (*UserResponse, error)
 	DeleteUser(request *DeleteUserRequest) (*DeleteUserResponse, error)
@@ -581,7 +614,7 @@ func (c *client) request(action string, body io.Reader) (io.ReadCloser, error) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", c.apiKey)
-	req.Header.Set("x-sdk-version", "0.10.1-go")
+	req.Header.Set("x-sdk-version", "0.11.0-go")
 
 	resp, err := c.client.Do(req)
 	if err != nil {

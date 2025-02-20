@@ -213,7 +213,7 @@ func (c *client) request(action string, body io.Reader) (io.ReadCloser, error) {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-sdk-version", "0.10.1-go")
+	req.Header.Set("x-sdk-version", "0.11.0-go")
 
 	resp, err := c.client.Do(req)
 	if err != nil {
